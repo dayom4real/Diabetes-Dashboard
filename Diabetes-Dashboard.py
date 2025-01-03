@@ -11,21 +11,22 @@ from oauth2client.service_account import ServiceAccountCredentials
 import os
 import json
 
-# Get JSON from environment variable
 service_account_key = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
 
-# Write JSON to a file
-key_file_path = '/tmp/service_account_key.json'
-with open(key_file_path, 'w') as f:
-    f.write(service_account_key)
+# Check if the environment variable is set and contains valid JSON
+if not service_account_key:
+    raise ValueError("Google application credentials not set. Please set the 'GOOGLE_APPLICATION_CREDENTIALS' environment variable.")
 
-# Set the GOOGLE_APPLICATION_CREDENTIALS to point to the file
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = key_file_path
+# Parse the JSON string into a dictionary
+credentials_info = json.loads(service_account_key)
 
-
+# Use credentials_info to authenticate via gspread
 scopes = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
-cred = ServiceAccountCredentials.from_json_keyfile_name('service_account_key.json', scopes)
-file = gspread.authorize(cred)
+credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_info, scopes)
+
+# Authorize and open the Google Sheet
+file = gspread.authorize(credentials)
+
 workbook = file.open("Diabetes")
 sheet = workbook.sheet1
 
