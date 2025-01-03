@@ -8,10 +8,23 @@ import numpy as np
 #import os
 #from xhtml2pdf import pisa
 from oauth2client.service_account import ServiceAccountCredentials
+import os
+import json
+
+# Get JSON from environment variable
+service_account_key = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+
+# Write JSON to a file
+key_file_path = '/tmp/service_account_key.json'
+with open(key_file_path, 'w') as f:
+    f.write(service_account_key)
+
+# Set the GOOGLE_APPLICATION_CREDENTIALS to point to the file
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = key_file_path
 
 
 scopes = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
-cred = ServiceAccountCredentials.from_json_keyfile_name('cred.json', scopes)
+cred = ServiceAccountCredentials.from_json_keyfile_name('service_account_key.json', scopes)
 file = gspread.authorize(cred)
 workbook = file.open("Diabetes")
 sheet = workbook.sheet1
