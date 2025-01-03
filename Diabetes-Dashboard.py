@@ -60,7 +60,7 @@ average_Glucose = np.round(df["Glucose"].mean(),2)
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 #card_body_style = {"height": "200px"}
-
+server = app.server
 app.layout = dbc.Container([
 
 dbc.Row([
@@ -342,11 +342,7 @@ def update_BG_dist(selected_chart, Outcome_Value):
 
 
 
-
-
-
-if __name__=='__main__':
- app.run(debug=True) 
-  #app.run_server(port=8043)
+if __name__ == '__main__':
+    app.run_server(debug=False, host='0.0.0.0', port=8080)
 
  
