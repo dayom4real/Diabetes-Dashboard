@@ -11,7 +11,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 
 scopes = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
-cred = ServiceAccountCredentials.from_json_keyfile_name('Dashboard\cred.json', scopes)
+cred = ServiceAccountCredentials.from_json_keyfile_name('cred.json', scopes)
 file = gspread.authorize(cred)
 workbook = file.open("Diabetes")
 sheet = workbook.sheet1
