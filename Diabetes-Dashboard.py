@@ -10,25 +10,38 @@ import numpy as np
 from oauth2client.service_account import ServiceAccountCredentials
 import os
 import json
+from google.auth import exceptions
+from google.oauth2 import service_account
 
+
+# Get the JSON credentials from the environment variable
 service_account_key = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
 
-# Check if the environment variable is set and contains valid JSON
+# Ensure the environment variable is set
 if not service_account_key:
     raise ValueError("Google application credentials not set. Please set the 'GOOGLE_APPLICATION_CREDENTIALS' environment variable.")
 
 # Parse the JSON string into a dictionary
 credentials_info = json.loads(service_account_key)
 
-# Use credentials_info to authenticate via gspread
+# Use google-auth to load the credentials
 scopes = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
-credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_info, scopes)
+credentials = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
 
 # Authorize and open the Google Sheet
-file = gspread.authorize(credentials)
+try:
+    client = gspread.authorize(credentials)
+    workbook = client.open("Diabetes")
+    sheet = workbook.sheet1
+except exceptions.DefaultCredentialsError as e:
+    print(f"Error: {e}")
+except exceptions.RefreshError as e:
+    print(f"JWT Signature Error: {e}")
+    raise
 
-workbook = file.open("Diabetes")
-sheet = workbook.sheet1
+
+
+
 
 df = pd.DataFrame(sheet.get_all_records())
 
